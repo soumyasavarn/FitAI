@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add Illness to History
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Add an Illness to Your History</h1>
+    
+    <form action="/add_illness" method="post">
+        <div class="form-group">
+            <label for="illness">Select an Illness:</label>
+            <select class="form-control" id="illness" name="illness">
+                {% for illness in illnesses %}
+                <option value="{{ illness.id }}">{{ illness.illness_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="severity">Severity (1-5):</label>
+            <select class="form-control" id="severity" name="severity">
+                <option value="1">1 (Mild)</option>
+                <option value="2">2</option>
+                <option value="3">3 (Moderate)</option>
+                <option value="4">4</option>
+                <option value="5">5 (Severe)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Illness</button>
+    </form>
+</div>
+{% endblock %}
