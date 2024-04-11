@@ -244,6 +244,43 @@ def log_weight():
     else:
         return render_template("weight.html")
 
+@app.route("/add_illness", methods=["GET", "POST"])
+@login_required
+def add_illness():
+    if request.method == "POST":
+        # Get the selected illness id and severity from the form
+        selected_illness_id = request.form.get("illness")
+        illness_severity = request.form.get("severity")
+        
+        # Get the user_id from the session
+        user_id = session["user_id"]
+
+        # Insert illness and severity into the user_illness table
+        db.execute("INSERT INTO user_illness (illness_id, user_id, severity) VALUES (?, ?, ?)", 
+                   selected_illness_id, user_id, illness_severity)
+        
+        flash("Illness added to your history.")
+        return redirect(url_for("homepage"))  # Replace some_page with your desired endpoint
+
+    # If GET request, fetch illnesses with their ids from the database
+    illnesses = db.execute("SELECT id, illness_name FROM illness_details")
+    return render_template("add_illness.html", illnesses=illnesses)
+
+@app.route("/view_illness_history")
+@login_required
+def view_illness_history():
+    user_id = session["user_id"]
+
+    # Fetch the user's illness history along with the illness details
+    illness_history = db.execute("""
+        SELECT ui.severity, id.illness_name 
+        FROM user_illness ui
+        JOIN illness_details id ON ui.illness_id = id.id
+        WHERE ui.user_id = ?
+    """, user_id)
+    
+    return render_template("view_illness_history.html", illness_history=illness_history)
+
 @app.route("/view_calories")
 @login_required
 def view_calories():
