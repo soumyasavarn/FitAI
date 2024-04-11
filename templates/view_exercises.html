@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+View Exercise Details
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Exercise Details</h1>
+    <ul class="list-group">
+        {% for detail in exercise_details %}
+        <li class="list-group-item">
+            Date: {{ detail.date_log }}, Steps: {{ detail.steps }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

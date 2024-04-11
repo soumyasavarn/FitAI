@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Exercise Log
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Log Your Exercise</h1>
+    
+    <!-- Existing user details display from your code snippet -->
+    <!-- ... user_details cards ... -->
+    <!-- ... BMI and target BMI display ... -->
+    
+    <!-- Exercise Log Form -->
+    <div class="card mt-4 mb-3">
+        <div class="card-body">
+            <h4 class="card-title text-center">Add Exercise Details</h4>
+            <form action="/exercise" method="post">
+                <div class="form-group">
+                    <label for="steps">Number of Steps</label>
+                    <input type="number" class="form-control" id="steps" name="steps" placeholder="Enter number of steps" required>
+                </div>
+                <div class="form-group">
+                    <label for="date_log">Date</label>
+                    <input type="date" class="form-control" id="date_log" name="date_log" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Weight Log
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Log Your Weight</h1>
+    
+    <!-- Form for logging weight -->
+    <div class="card">
+        <div class="card-body">
+            <form action="/log_weight" method="post">
+                <div class="form-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" step="0.01" class="form-control" id="weight" name="weight" placeholder="Enter your weight" required>
+                </div>
+                <div class="form-group">
+                    <label for="date_log">Date</label>
+                    <input type="date" class="form-control" id="date_log" name="date_log" placeholder="YYYY-MM-DD" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

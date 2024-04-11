@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+View Calorie Details
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Calorie Details</h1>
+    <ul class="list-group">
+        {% for detail in calorie_details %}
+        <li class="list-group-item">
+            Date: {{ detail.date_log }}, Calories: {{ detail.calories }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

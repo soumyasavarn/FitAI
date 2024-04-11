@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Homepage
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Your Details</h1>
+    <p class="text-center">Thank you for choosing our website to generate your fitness plans!</p>
+    
+    {% for item in user_details %}
+        <!-- Bootstrap Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4 class="card-title">{{ item.username }}'s Fitness Profile</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text"><strong>Id Number:</strong> {{ item.id }}</p>
+                <p class="card-text"><strong>Age:</strong> {{ item.age }}</p>
+                <p class="card-text"><strong>Gender:</strong> {{ item.gender }}</p>
+                <p class="card-text"><strong>Height:</strong> {{ item.height }} cm</p>
+                <p class="card-text"><strong>Current Weight:</strong> {{ item.curr_weight }} kg</p>
+                <p class="card-text"><strong>Target Weight:</strong> {{ item.target_weight }} kg</p>
+                <p class="card-text"><strong>Email:</strong> {{ item.email }}</p>
+                <p class="card-text"><strong>Time of Joining:</strong> {{ item.time_joined }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="text-center">
+        <p class="h3">Your BMI is <span class="badge bg-primary">{{ bmi }}</span></p>
+    </div>
+    <div class="text-center">
+        <p class="h3">Your target BMI is <span class="badge bg-primary">{{ bmi_target }}</span></p>
+    </div>
+</div>
+{% endblock %}
