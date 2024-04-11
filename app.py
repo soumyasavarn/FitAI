@@ -195,7 +195,7 @@ def exercise():
 
     if request.method == "POST":
         # Retrieve data from form
-        steps = request.form.get("steps")
+        steps = int(request.form.get("steps"))
         date_log = request.form.get("date_log")
 
         # Check if steps or date_log is not provided
@@ -204,7 +204,7 @@ def exercise():
 
         user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
         if(user_details):
-            prev_steps = user_details[0]["steps"]
+            prev_steps = int(user_details[0]["steps"])
             db.execute("UPDATE exercise_details SET steps = ? WHERE user_id = ? AND date_log = ?", steps + prev_steps, user_c_id, date_log)
             flash("Another record for the same day was found, it has been updated with the total!")
         else:
