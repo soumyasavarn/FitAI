@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Calorie Intake Log
+{% endblock %}
+{% block main %}
+    <div class="container mt-5">
+        <h1>Calorie Intake Log</h1>
+        <form action="/calories" method="post">
+            <div class="form-group">
+                <label for="calories">Calories Consumed</label>
+                <input type="number" class="form-control" id="calories" name="calories" placeholder="Enter calories consumed" required>
+            </div>
+            <div class="form-group">
+                <label for="date_log">Date</label>
+                <input type="date" class="form-control" id="date_log" name="date_log" placeholder="YYYY-MM-DD" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
