@@ -1,0 +1,44 @@
+.stylish-text {
+    color: #007bff; /* Bootstrap primary color */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for brand */
+nav .navbar-brand .blue
+{
+    color: #537fbe;
+}
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+nav .navbar-brand .yellow
+{
+    color: #f5b82e;
+}
+nav .navbar-brand .green
+{
+    color: #2e944b;
+}
+table, td, th
+{
+    border: 1px solid;
+}
+td
+{
+    text-align: center;
+}
+tr:nth-child(even) {background-color: #f2f2f2;}
+.large-button {
+    padding: 10px 20px; /* Increase padding to make the button larger */
+    font-size: 1.25rem; /* Increase font size */
+}
