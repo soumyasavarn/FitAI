@@ -204,8 +204,9 @@ def exercise():
 
         user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
         if(user_details):
-            db.execute("UPDATE exercise_details SET steps = ? WHERE user_id = ? AND date_log = ?", steps, user_c_id, date_log)
-            flash("Another record for the same day was found, it has been updated!")
+            prev_steps = user_details[0]["steps"]
+            db.execute("UPDATE exercise_details SET steps = ? WHERE user_id = ? AND date_log = ?", steps + prev_steps, user_c_id, date_log)
+            flash("Another record for the same day was found, it has been updated with the total!")
         else:
             # Insert the form data into the exercise_details table
             db.execute("INSERT INTO exercise_details (user_id, steps, date_log) VALUES (?, ?, ?)",
