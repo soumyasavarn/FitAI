@@ -170,12 +170,18 @@ def calories():
         if not calories or not date_log:
             return apology("Missing calories or date!", 400)
 
-        # Insert the form data into the calorie_details table
-        db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
-                   user_id, calories, date_log)
+        user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
 
-        # Flash a success message
-        flash("Calorie details added successfully!")
+        if(user_details):
+            db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+            flash("Another record for the same day was found, the number of calories has been updated!")
+        else:
+            # Insert the form data into the calorie_details table
+            db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
+                    user_id, calories, date_log)
+
+            # Flash a success message
+            flash("Calorie details added successfully!")
         return redirect(url_for("calories"))
 
     else:  # If method is GET
@@ -196,12 +202,16 @@ def exercise():
         if not steps or not date_log:
             return apology("Missing steps or date!", 400)
 
-        # Insert the form data into the exercise_details table
-        db.execute("INSERT INTO exercise_details (user_id, steps, date_log) VALUES (?, ?, ?)",
+        user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
+        if(user_details):
+            db.execute("UPDATE exercise_details SET steps = ? WHERE user_id = ? AND date_log = ?", steps, user_c_id, date_log)
+            flash("Another record for the same day was found, it has been updated!")
+        else:
+            # Insert the form data into the exercise_details table
+            db.execute("INSERT INTO exercise_details (user_id, steps, date_log) VALUES (?, ?, ?)",
                    user_id, steps, date_log)
-
-        # Flash a success message
-        flash("Exercise details added successfully!")
+            # Flash a success message
+            flash("Exercise details added successfully!")
         return redirect(url_for("exercise"))
 
     else:  # If method is GET
@@ -221,11 +231,15 @@ def log_weight():
         if not weight or not date_log:
             return apology("Must provide weight and date", 400)
         
-        # Insert the form data into the weight_details table
-        db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
-                   user_id, weight, date_log)
-        
-        flash("Weight logged successfully!")
+        user_details = db.execute("SELECT * FROM weight_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
+        if(user_details):
+            db.execute("UPDATE weight_details SET weight = ? WHERE user_id = ? AND date_log = ?", weight, user_id, date_log)
+            flash("A record for that day already exists! Weight updated successfully!")
+        else:
+            # Insert the form data into the weight_details table
+            db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
+                    user_id, weight, date_log)
+            flash("Weight logged successfully!")
         return redirect(url_for("log_weight"))
     else:
         return render_template("weight.html")
