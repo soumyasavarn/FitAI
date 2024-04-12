@@ -192,43 +192,60 @@ def calories():
 def calories_automated():
     # The `user_id` should be retrieved from the session
     user_id = user_c_id  # Ensure you have user_id set in the session
-
+    er=0
+    img = None
     if request.method == "POST":
+        try:
         # Retrieve data from form
-        img = request.form.get("mess_menu")
-        from datetime import datetime
-        today_date = datetime.today().date()
-        date_log = today_date.strftime('%Y-%m-%d')
-        from genai import get_calories
-        calories = get_calories(img)
-        if calories < 0:
-            flash("An Error Occured !")
-        else:
-        # Check if calories or date_log is not provided
-            if not img:
-                return apology("Missing image!", 400)
-            try:
-                user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
-            except Exception as e:
-                flash("An error occurred while executing your request ! ", e)
-
-            if(user_details):
-                try: 
-                    db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
-                    flash("Another record for the same day was found, the number of calories has been updated!")
-                except Exception as e:
-                    flash("An error occurred while executing your request !", e)
+            if 'mess_menu' in request.files:
+                img = request.files['mess_menu']
+            else:
+                return 'No image uploaded'
+            from datetime import datetime
+            today_date = datetime.today().date()
+            date_log = today_date.strftime('%Y-%m-%d')
+            from genai import get_calories
+            img.save('tmp.jpg')
+            from PIL import Image
+            img = Image.open('tmp.jpg')
+            calories = get_calories(img)
+            print (calories)
+            if calories < 0:
+                flash ("An Error Occured !")
+                er+=1
 
             else:
+            # Check if calories or date_log is not provided
+                if not img:
+                    flash("Missing image!", 400)
+                    er+=1
                 try:
-                    db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
-                            user_id, calories, date_log)
-                    flash("Calorie details added successfully!")
+                    user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
                 except Exception as e:
-                    flash("An error occurred while executing your request  ", e)
+                    flash ("An error occurred while executing your request ! ", e)
+                    er+=1
 
-            return redirect(url_for("calories_automated"))
+                if(user_details):
+                    try: 
+                        db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+                        return apology ("Another record for the same day was found, the number of calories has been updated!")
+                    except Exception as e:
+                        flash ("An error occurred while executing your request !", e)
+                        er+=1
 
+                else:
+                    try:
+                        db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
+                                user_id, calories, date_log)
+                        flash ("Calorie details added successfully!")
+                    except Exception as e:
+                        flash ("An error occurred while executing your request  ", e)
+                        er+=1
+                
+                return redirect(url_for("calories_automated"))
+                
+        except:
+            return apology("Error uploading calories!", 400)
     else:  # If method is GET
         return render_template("calories_automated.html")
        
@@ -236,33 +253,35 @@ def calories_automated():
 @login_required
 def exercise():
     user_id = session["user_id"]  # Ensure you have user_id set in the session
-
+    
     if request.method == "POST":
-        # Retrieve data from form
-        distance_covered = request.form.get("distance_covered")
-        time_taken = request.form.get("time_taken")
-        date_log = request.form.get("date_log")
+            try:
+            # Retrieve data from form
+                distance_covered = request.form.get("distance_covered")
+                time_taken = request.form.get("time_taken")
+                date_log = request.form.get("date_log")
 
-        # Check if distance_covered, time_taken, or date_log is not provided
-        if not distance_covered or not time_taken or not date_log:
-            return apology("Missing exercise details or date!", 400)
+                # Check if distance_covered, time_taken, or date_log is not provided
+                if not distance_covered or not time_taken or not date_log:
+                    return apology("Missing exercise details or date!", 400)
 
-        # Check if a record for that user and date already exists
-        user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
-        
-        if user_details:
-            # There's already a record for that day, so accumulate the distances and times
-            db.execute("UPDATE exercise_details SET distance_covered = distance_covered + ?, time_taken = time_taken + ? WHERE user_id = ? AND date_log = ?",
-                       distance_covered, time_taken, user_id, date_log)
-            flash("Exercise details for the day updated successfully!")
-        else:
-            # No record for that day exists, insert new entry
-            db.execute("INSERT INTO exercise_details (user_id, distance_covered, time_taken, date_log) VALUES (?, ?, ?, ?)",
-                       user_id, distance_covered, time_taken, date_log)
-            flash("New exercise details added successfully!")
+                # Check if a record for that user and date already exists
+                user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
+                
+                if user_details:
+                    # There's already a record for that day, so accumulate the distances and times
+                    db.execute("UPDATE exercise_details SET distance_covered = distance_covered + ?, time_taken = time_taken + ? WHERE user_id = ? AND date_log = ?",
+                            distance_covered, time_taken, user_id, date_log)
+                    flash("Exercise details for the day updated successfully!")
+                else:
+                    # No record for that day exists, insert new entry
+                    db.execute("INSERT INTO exercise_details (user_id, distance_covered, time_taken, date_log) VALUES (?, ?, ?, ?)",
+                            user_id, distance_covered, time_taken, date_log)
+                    flash("New exercise details added successfully!")
 
-        return redirect(url_for("exercise"))
-
+                return redirect(url_for("exercise"))
+            except:
+                return apology("Error uploading exercise details!", 400)
     else:  # If method is GET
         return render_template("exercise.html")
 

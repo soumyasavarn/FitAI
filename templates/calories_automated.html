@@ -7,7 +7,7 @@ Calorie Intake Log
     <div class="container mt-5">
         <h1>Calorie Intake Log (Automated for today)</h1>
         <h4>Just Provide the menu of the mess that you took meal</h4>
-        <form action="/calories_automated" method="post">
+        <form action="/calories_automated" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="mess_menu">Mess Menu</label>
                 <input type="file" class="form-control" id="mess_menu" name="mess_menu" placeholder="Provide mess menu" required>
