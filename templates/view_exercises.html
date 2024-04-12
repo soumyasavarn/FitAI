@@ -7,12 +7,25 @@ View Exercise Details
 {% block main %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Exercise Details</h1>
-    <ul class="list-group">
-        {% for detail in exercise_details %}
-        <li class="list-group-item">
-            Date: {{ detail.date_log }}, Steps: {{ detail.steps }}
-        </li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Distance covered (km)</th>
+                <th>Time taken (minutes)</th>
+                <th>Speed (km/h)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in exercise_details %}
+            <tr>
+                <td>{{ detail.date_log }}</td>
+                <td>{{ detail.distance_covered }}</td>
+                <td>{{ detail.time_taken }}</td>
+                <td>{{ '%.2f'|format(detail.speed) }}</td> <!-- Formatted to two decimal places -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
