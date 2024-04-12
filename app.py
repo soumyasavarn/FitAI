@@ -210,14 +210,14 @@ def calories_automated():
             try:
                 user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
             except Exception as e:
-                flash("An error occurred while executing your request  ", e)
+                flash("An error occurred while executing your request ! ", e)
 
             if(user_details):
                 try: 
                     db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
                     flash("Another record for the same day was found, the number of calories has been updated!")
                 except Exception as e:
-                    flash("An error occurred while executing your request  ", e)
+                    flash("An error occurred while executing your request !", e)
 
             else:
                 try:
