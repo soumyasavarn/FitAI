@@ -7,12 +7,21 @@ View Calorie Details
 {% block main %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Calorie Details</h1>
-    <ul class="list-group">
-        {% for detail in calorie_details %}
-        <li class="list-group-item">
-            Date: {{ detail.date_log }}, Calories: {{ detail.calories }}
-        </li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Calories</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in calorie_details %}
+            <tr>
+                <td>{{ detail.date_log }}</td>
+                <td>{{ detail.calories }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
