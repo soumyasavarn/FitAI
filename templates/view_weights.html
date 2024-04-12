@@ -7,12 +7,21 @@ View Weight Details
 {% block main %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Weight Details</h1>
-    <ul class="list-group">
-        {% for detail in weight_details %}
-        <li class="list-group-item">
-            Date: {{ detail.date_log }}, Weight: {{ detail.weight }} kg
-        </li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Weight (kg)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in weight_details %}
+            <tr>
+                <td>{{ detail.date_log }}</td>
+                <td>{{ detail.weight }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
