@@ -3,3 +3,5 @@ Flask
 Flask-Session
 requests
 cachelib
+google-generativeai
+pillow
