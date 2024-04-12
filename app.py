@@ -193,6 +193,49 @@ def calories():
 
     else:  # If method is GET
         return render_template("calories.html")
+
+@app.route("/calories_automated", methods=["GET", "POST"])
+@login_required
+def calories_automated():
+    # The `user_id` should be retrieved from the session
+    user_id = user_c_id  # Ensure you have user_id set in the session
+
+    if request.method == "POST":
+        # Retrieve data from form
+        img = request.form.get("mess_menu")
+        from datetime import datetime
+        today_date = datetime.today().date()
+        date_log = today_date.strftime('%Y-%m-%d')
+        from genai import get_calories
+        calories = get_calories(img)
+
+        # Check if calories or date_log is not provided
+        if not img:
+            return apology("Missing image!", 400)
+        try:
+            user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
+        except Exception as e:
+            flash("An error occurred while executing your request  ", e)
+        
+        if(user_details):
+            try: 
+                db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+                flash("Another record for the same day was found, the number of calories has been updated!")
+            except Exception as e:
+                flash("An error occurred while executing your request  ", e)
+
+        else:
+            try:
+                db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
+                        user_id, calories, date_log)
+                flash("Calorie details added successfully!")
+            except Exception as e:
+                flash("An error occurred while executing your request  ", e)
+
+        return redirect(url_for("calories_automated"))
+
+    else:  # If method is GET
+        return render_template("calories_automated.html")
     
 @app.route("/exercise", methods=["GET", "POST"])
 @login_required
