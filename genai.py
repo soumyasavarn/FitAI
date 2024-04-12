@@ -4,6 +4,9 @@ GOOGLE_API_KEY = "AIzaSyApnVIlemugPLy57No8t5LNzgOe7WWk2Hw"
 #source(for getting API): https://ai.google.dev/?utm_source=google&utm_medium=cpc&utm_campaign=brand_core_brand&gad_source=1
 
 def get_calories(img):
+    # return 69
+    print (img)
+    print(type(img))
     genai.configure(api_key=GOOGLE_API_KEY) #Configuring the genai 
     # def get_calories(image):
     try: 
@@ -28,8 +31,11 @@ def get_calories(img):
                 total_calories += int(model_answer)
                 # print (total_calories)
             return ( int(total_calories/2) )
+                
         except:
             print ("Error fetching the response !")
+            return -1
     except:
         print ("Error loading the image !")
+        return -1
 

@@ -208,31 +208,33 @@ def calories_automated():
         date_log = today_date.strftime('%Y-%m-%d')
         from genai import get_calories
         calories = get_calories(img)
-
-        # Check if calories or date_log is not provided
-        if not img:
-            return apology("Missing image!", 400)
-        try:
-            user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
-        except Exception as e:
-            flash("An error occurred while executing your request  ", e)
-        
-        if(user_details):
-            try: 
-                db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
-                flash("Another record for the same day was found, the number of calories has been updated!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-
+        if calories < 0:
+            flash("An Error Occured !")
         else:
+        # Check if calories or date_log is not provided
+            if not img:
+                return apology("Missing image!", 400)
             try:
-                db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
-                        user_id, calories, date_log)
-                flash("Calorie details added successfully!")
+                user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
             except Exception as e:
                 flash("An error occurred while executing your request  ", e)
+            
+            if(user_details):
+                try: 
+                    db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+                    flash("Another record for the same day was found, the number of calories has been updated!")
+                except Exception as e:
+                    flash("An error occurred while executing your request  ", e)
 
-        return redirect(url_for("calories_automated"))
+            else:
+                try:
+                    db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
+                            user_id, calories, date_log)
+                    flash("Calorie details added successfully!")
+                except Exception as e:
+                    flash("An error occurred while executing your request  ", e)
+
+            return redirect(url_for("calories_automated"))
 
     else:  # If method is GET
         return render_template("calories_automated.html")
