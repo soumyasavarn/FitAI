@@ -61,7 +61,7 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-        global user_c_id
+        global user_c_id;
         user_c_id = rows[0]["id"]
         # Redirect user to home page
         return redirect("/")
@@ -169,114 +169,58 @@ def calories():
         # Check if calories or date_log is not provided
         if not calories or not date_log:
             return apology("Missing calories or date!", 400)
-        try:
-            user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
-        except Exception as e:
-            flash("An error occurred while executing your request  ", e)
+
+        user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
 
         if(user_details):
-            try: 
-                db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
-                flash("Another record for the same day was found, the number of calories has been updated!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-
+            db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+            flash("Another record for the same day was found, the number of calories has been updated!")
         else:
-            try:
-                db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
-                        user_id, calories, date_log)
-                flash("Calorie details added successfully!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
+            # Insert the form data into the calorie_details table
+            db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
+                    user_id, calories, date_log)
 
+            # Flash a success message
+            flash("Calorie details added successfully!")
         return redirect(url_for("calories"))
 
     else:  # If method is GET
         return render_template("calories.html")
-
-@app.route("/calories_automated", methods=["GET", "POST"])
-@login_required
-def calories_automated():
-    # The `user_id` should be retrieved from the session
-    user_id = user_c_id  # Ensure you have user_id set in the session
-
-    if request.method == "POST":
-        # Retrieve data from form
-        img = request.form.get("mess_menu")
-        from datetime import datetime
-        today_date = datetime.today().date()
-        date_log = today_date.strftime('%Y-%m-%d')
-        from genai import get_calories
-        calories = get_calories(img)
-        if calories < 0:
-            flash("An Error Occured !")
-        else:
-        # Check if calories or date_log is not provided
-            if not img:
-                return apology("Missing image!", 400)
-            try:
-                user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-            
-            if(user_details):
-                try: 
-                    db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
-                    flash("Another record for the same day was found, the number of calories has been updated!")
-                except Exception as e:
-                    flash("An error occurred while executing your request  ", e)
-
-            else:
-                try:
-                    db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
-                            user_id, calories, date_log)
-                    flash("Calorie details added successfully!")
-                except Exception as e:
-                    flash("An error occurred while executing your request  ", e)
-
-            return redirect(url_for("calories_automated"))
-
-    else:  # If method is GET
-        return render_template("calories_automated.html")
     
 @app.route("/exercise", methods=["GET", "POST"])
 @login_required
 def exercise():
-    # The `user_id` should be retrieved from the session
-    user_id = user_c_id  # Ensure you have user_id set in the session
+    user_id = session["user_id"]  # Ensure you have user_id set in the session
 
     if request.method == "POST":
         # Retrieve data from form
-        steps = int(request.form.get("steps"))
+        distance_covered = request.form.get("distance_covered")
+        time_taken = request.form.get("time_taken")
         date_log = request.form.get("date_log")
 
-        # Check if steps or date_log is not provided
-        if not steps or not date_log:
-            return apology("Missing steps or date!", 400)
+        # Check if distance_covered, time_taken, or date_log is not provided
+        if not distance_covered or not time_taken or not date_log:
+            return apology("Missing exercise details or date!", 400)
 
-        user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
-        if(user_details):
-            prev_steps = int(user_details[0]["steps"])
-            try:
-                db.execute("UPDATE exercise_details SET steps = ? WHERE user_id = ? AND date_log = ?", steps + prev_steps, user_c_id, date_log)
-                flash("Another record for the same day was found, it has been updated with the total!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-
+        # Check if a record for that user and date already exists
+        user_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
+        
+        if user_details:
+            # There's already a record for that day, so accumulate the distances and times
+            db.execute("UPDATE exercise_details SET distance_covered = distance_covered + ?, time_taken = time_taken + ? WHERE user_id = ? AND date_log = ?",
+                       distance_covered, time_taken, user_id, date_log)
+            flash("Exercise details for the day updated successfully!")
         else:
-            try:
-            # Insert the form data into the exercise_details table
-                db.execute("INSERT INTO exercise_details (user_id, steps, date_log) VALUES (?, ?, ?)",
-                    user_id, steps, date_log)
-                # Flash a success message
-                flash("Exercise details added successfully!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
+            # No record for that day exists, insert new entry
+            db.execute("INSERT INTO exercise_details (user_id, distance_covered, time_taken, date_log) VALUES (?, ?, ?, ?)",
+                       user_id, distance_covered, time_taken, date_log)
+            flash("New exercise details added successfully!")
 
         return redirect(url_for("exercise"))
 
     else:  # If method is GET
         return render_template("exercise.html")
+
 
 @app.route("/log_weight", methods=["GET", "POST"])
 @login_required
@@ -294,21 +238,13 @@ def log_weight():
         
         user_details = db.execute("SELECT * FROM weight_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
         if(user_details):
-            try:
-                db.execute("UPDATE weight_details SET weight = ? WHERE user_id = ? AND date_log = ?", weight, user_id, date_log)
-                flash("A record for that day already exists! Weight updated successfully!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-
+            db.execute("UPDATE weight_details SET weight = ? WHERE user_id = ? AND date_log = ?", weight, user_id, date_log)
+            flash("A record for that day already exists! Weight updated successfully!")
         else:
             # Insert the form data into the weight_details table
-            try: 
-                db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
+            db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
                     user_id, weight, date_log)
-                flash("Weight logged successfully!")
-            except Exception as e:
-                flash("An error occurred while executing your request  ", e)
-
+            flash("Weight logged successfully!")
         return redirect(url_for("log_weight"))
     else:
         return render_template("weight.html")
@@ -324,64 +260,63 @@ def add_illness():
         # Get the user_id from the session
         user_id = session["user_id"]
 
-        try:
-            db.execute("INSERT INTO user_illness (illness_id, user_id, severity) VALUES (?, ?, ?)", selected_illness_id, user_id, illness_severity)
-        except Exception as e:
-            flash("An error occurred while executing your request  ", e)
-
+        # Insert illness and severity into the user_illness table
+        db.execute("INSERT INTO user_illness (illness_id, user_id, severity) VALUES (?, ?, ?)", 
+                   selected_illness_id, user_id, illness_severity)
+        
         flash("Illness added to your history.")
         return redirect(url_for("homepage"))  # Replace some_page with your desired endpoint
 
     # If GET request, fetch illnesses with their ids from the database
-    try: 
-        illnesses = db.execute("SELECT id, illness_name FROM illness_details")
-    except Exception as e:
-        flash("An error occurred while executing your request  ", e)    
+    illnesses = db.execute("SELECT id, illness_name FROM illness_details")
     return render_template("add_illness.html", illnesses=illnesses)
 
 @app.route("/view_illness_history")
 @login_required
 def view_illness_history():
     user_id = session["user_id"]
-    illness_history = []
-    try:
-        illness_history = db.execute("""
-                SELECT ui.severity, id.illness_name 
-                FROM user_illness ui
-                JOIN illness_details id ON ui.illness_id = id.id
-                WHERE ui.user_id = ?
-            """, user_id)    
-    except Exception as e:
-        flash("An error occurred while executing your request  ", e)
 
+    # Fetch the user's illness history along with the illness details
+    illness_history = db.execute("""
+        SELECT ui.severity, id.illness_name 
+        FROM user_illness ui
+        JOIN illness_details id ON ui.illness_id = id.id
+        WHERE ui.user_id = ?
+    """, user_id)
+    
     return render_template("view_illness_history.html", illness_history=illness_history)
 
 @app.route("/view_calories")
 @login_required
 def view_calories():
-    calorie_details = []
-    try:
-        calorie_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ?", session["user_id"])
-    except Exception as e:
-        flash("An error occurred while executing your request  ", e)
+    calorie_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ?", session["user_id"])
     return render_template("view_calories.html", calorie_details=calorie_details)
 
 @app.route("/view_weights")
 @login_required
 def view_weights():
-    weight_details = []
-    try:
-        weight_details = db.execute("SELECT * FROM weight_details WHERE user_id = ?", session["user_id"])
-    except Exception as e:
-        flash("An error occurred while executing your request  ", e)
+    weight_details = db.execute("SELECT * FROM weight_details WHERE user_id = ?", session["user_id"])
     return render_template("view_weights.html", weight_details=weight_details)
 
 @app.route("/view_exercises")
 @login_required
 def view_exercises():
+    # Retrieve exercise details for the current user
+    exercise_details_raw = db.execute("SELECT * FROM exercise_details WHERE user_id = ?", session["user_id"])
+    
+    # Calculate speed for each record and add it to the details
     exercise_details = []
-    try:
-        exercise_details = db.execute("SELECT * FROM exercise_details WHERE user_id = ?", session["user_id"])
-    except Exception as e:
-        flash("An error occurred while executing your request  ", e)
+    for detail in exercise_details_raw:
+        speed = 0
+        if detail["time_taken"]:  # To avoid division by zero
+            # Convert time from minutes to hours and calculate speed
+            speed = detail["distance_covered"] / (detail["time_taken"] / 60.0)
+        # Append the detail with speed to the list
+        exercise_details.append({
+            "date_log": detail["date_log"],
+            "distance_covered": detail["distance_covered"],
+            "time_taken": detail["time_taken"],
+            "speed": speed  # This is the speed in km/h
+        })
+
     return render_template("view_exercises.html", exercise_details=exercise_details)
