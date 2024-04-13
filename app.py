@@ -352,7 +352,7 @@ def generate_fitness_plan():
             res[0] *= -1
         r_speed = res[0]/d_hour
         current_date = datetime.now().date()
-        db.execute("INSERT INTO fitness_plan_user(user_id,r_calories,r_mins_activity,r_distance, date_log) VALUES (?, ?, ?, ?, ?)", user_c_id, exer_burn, int(daily_activity_minutes), res[0], current_date)        
+        db.execute("INSERT INTO fitness_plan_user(user_id,r_calories,r_mins_activity,r_distance, date_log, time_taken) VALUES (?, ?, ?, ?, ?, ?)", user_c_id, exer_burn, int(daily_activity_minutes), res[0], current_date, (int)(time_to_lose_weight))        
 
         # Placeholder for where you would flash a success message or redirect
         flash("Fitness plan generated successfully!")
