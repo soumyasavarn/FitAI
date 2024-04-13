@@ -16,7 +16,7 @@
 
         <link href="/static/styles.css" rel="stylesheet">
 
-        <title>Online Food Delivery System: {% block title %}{% endblock %}</title>
+        <title>FitAI</title>
 
     </head>
 
@@ -24,19 +24,29 @@
 
         <nav class="bg-light border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/"><span class="blue">FitAI- your fitness partner</span></a>
+                <a class="navbar-brand" href="/"><span class="blue"><strong>FitAI</strong> - <small>Your Fitness Partner</small></span></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                {% if not session["user_id"] %}
+                <ul class="navbar-nav ms-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/register"><strong>Register</strong></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login"><strong>Log In</strong></a></li>
+                </ul>
+            {% endif %}
+
+        </nav>
+        {% if session["user_id"] %}
+        <nav class="bg-light border navbar navbar-expand-md navbar-light">
                 <div class="collapse navbar-collapse" id="navbar">
-                    {% if session["user_id"] %}
+                    
                         <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/homepage">Homepage</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/homepage"><strong>Homepage</strong></a></li>
                             
                             <!-- Dropdown for Order related links -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Add user information
+                                    <strong>Add user information</strong>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="orderDropdown">
                                     <li><a class="dropdown-item" href="/calories_automated">Add food logs (Automated)</a></li>
@@ -49,34 +59,31 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="viewDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    View user information
+                                    <strong>View user information</strong>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="orderDropdown">
                                     <li><a class="dropdown-item" href="/view_calories">View food logs</a></li>
                                     <li><a class="dropdown-item" href="/view_exercises">View exercise logs</a></li>
                                     <li><a class="dropdown-item" href="/view_weights">View weight logs</a></li>
-                                    <li><a class="dropdown-item" href="/view_illness_history">View illness history</a></li>
+                                    <li><a class="dropdown-item" href="/view_illness_history">Add illness history</a></li>
                                     <li><a class="dropdown-item" href="/view_fitness_plans">View recommended fitness plan</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Your account
+                                    <strong>Your account</strong>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="accountDropdownn">
                                     <li><a class="dropdown-item" href="/changepwd">Change Password</a></li></li>
                                     <li><a class="dropdown-item" href="/logout">Log Out</a></li>
                                 </ul>
                             </li>
-                    {% else %}
-                        <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
-                        </ul>
-                    {% endif %}
+                            
+                        
                 </div>
             </div>
         </nav>
+        {% endif %}
         {% if get_flashed_messages() %}
             <header>
                 <div class="alert alert-primary mb-0 text-center" role="alert">
