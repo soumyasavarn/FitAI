@@ -7,19 +7,17 @@ Exercise Log
 {% block main %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Log Your Exercise</h1>
-    
-    <!-- Existing user details display from your code snippet -->
-    <!-- ... user_details cards ... -->
-    <!-- ... BMI and target BMI display ... -->
-    
-    <!-- Exercise Log Form -->
     <div class="card mt-4 mb-3">
         <div class="card-body">
             <h4 class="card-title text-center">Add Exercise Details</h4>
             <form action="/exercise" method="post">
                 <div class="form-group">
-                    <label for="steps">Number of Steps</label>
-                    <input type="number" class="form-control" id="steps" name="steps" placeholder="Enter number of steps" required>
+                    <label for="distance_covered">Distance Covered (km)</label>
+                    <input type="number" step="0.01" class="form-control" id="distance_covered" name="distance_covered" placeholder="Enter distance covered in km" required>
+                </div>
+                <div class="form-group">
+                    <label for="time_taken">Time Taken (minutes)</label>
+                    <input type="number" class="form-control" id="time_taken" name="time_taken" placeholder="Enter time taken in minutes" required>
                 </div>
                 <div class="form-group">
                     <label for="date_log">Date</label>
