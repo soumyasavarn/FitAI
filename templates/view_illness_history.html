@@ -7,14 +7,25 @@ Illness History
 {% block main %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Your Illness History</h1>
-    <ul class="list-group">
-        {% for record in illness_history %}
-        <li class="list-group-item">
-            Illness: {{ record.illness_name }}, Severity: {{ record.severity }}
-        </li>
-        {% else %}
-        <li class="list-group-item">No illness records found.</li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Illness</th>
+                <th>Severity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in illness_history %}
+            <tr>
+                <td>{{ record.illness_name }}</td>
+                <td>{{ record.severity }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2" class="text-center">No illness records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
