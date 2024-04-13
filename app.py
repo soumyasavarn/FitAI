@@ -61,7 +61,7 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-        global user_c_id;
+        global user_c_id
         user_c_id = rows[0]["id"]
         # Redirect user to home page
         return redirect("/")
@@ -125,10 +125,10 @@ def changepwd():
         if password != c_password:
             return apology("Passwords do not match!")
         d = db.execute("SELECT * FROM user WHERE id = ?", u4)
-        if not check_password_hash(d[0]["hash"],o_password):
+        if not check_password_hash(d[0]["password"],o_password):
             return apology("Incorrect old password!")
         else:
-            db.execute("UPDATE user SET hash = ? WHERE id = ?", generate_password_hash(password), u4)
+            db.execute("UPDATE user SET password = ? WHERE id = ?", generate_password_hash(password,method='pbkdf2:sha256', salt_length=8), u4)
         return redirect("/login")
     else:
         return render_template("changepwd.html")
