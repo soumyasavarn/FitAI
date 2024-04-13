@@ -138,7 +138,7 @@ def changepwd():
 def home():
     try:
         user_details = db.execute("""
-            SELECT id, username, email, time_joined, curr_weight, target_weight, height, gender, age
+            SELECT id, username, email, time_joined, curr_weight, target_weight, height, gender, age, activity_level
             FROM user
             WHERE id = ? 
         """, (user_c_id))
@@ -313,7 +313,21 @@ def log_weight():
         return redirect(url_for("log_weight"))
     else:
         return render_template("weight.html")
+@app.route("/activity_level", methods=["GET", "POST"])
+@login_required
+def activity_level():
+    if request.method == "POST":
+        user_id = user_c_id
+        level = request.form.get("activity_level")
+        
+        # Assuming 'db' is the database connection object
+        db.execute("UPDATE user SET activity_level = ? WHERE id = ?", (int)(level), user_id)
+        
+        flash("Activity level updated successfully!")
+        return redirect(url_for('activity_level'))
 
+    # If GET request or initial page load
+    return render_template("activity_level.html")
 @app.route("/generate_fitness_plan", methods=["GET", "POST"])
 @login_required
 def generate_fitness_plan():
@@ -330,10 +344,15 @@ def generate_fitness_plan():
         age = user_details[0]["age"]
         height = user_details[0]["height"]
         diff = c_weight-t_weight
+        a = db.execute("SELECT activity_level FROM user WHERE id = ?", user_c_id)
         if(gender == "male"):
-            bmr = (66+13.7*c_weight+5*height-6.8*age)*1.5
+            al = 0.2*(a[0]["activity_level"]+5)+0.1
+            print(f"Activity Level multiplier is: {al}")
+            bmr = (66+13.7*c_weight+5*height-6.8*age)*al
         else:
-            bmr = (655+9.6*c_weight+1.8*height-4.7*age)*1.4
+            al = 0.15*(a[0]["activity_level"]+4)+0.05
+            print(f"Activity Level multiplier is: {al}")
+            bmr = (655+9.6*c_weight+1.8*height-4.7*age)*al
         cal = db.execute("SELECT AVG(calories) as average_daily_calories FROM calorie_details WHERE user_id = ?", user_c_id)
         print(cal)
         avg_cal = cal[0]["average_daily_calories"]
@@ -363,7 +382,7 @@ def generate_fitness_plan():
 @app.route("/view_fitness_plans")
 @login_required
 def view_fitness_plans():
-    user_id = session["user_id"]  # Get the user's ID from the session
+    user_id = user_c_id  # Get the user's ID from the session
     
     # Retrieve the fitness plans for the user from the database
     fitness_plans_raw = db.execute("SELECT * FROM fitness_plan_user WHERE user_id = ?", user_id)
