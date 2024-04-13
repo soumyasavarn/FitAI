@@ -170,10 +170,10 @@ def calories():
         if not calories or not date_log:
             return apology("Missing calories or date!", 400)
 
-        user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
+        user_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
 
         if(user_details):
-            db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
+            db.execute("UPDATE calorie_details SET calories = ? WHERE user_id = ? AND date_log = ?", calories, user_c_id, date_log)
             flash("Another record for the same day was found, the number of calories has been updated!")
         else:
             # Insert the form data into the calorie_details table
@@ -192,7 +192,6 @@ def calories():
 def calories_automated():
     # The `user_id` should be retrieved from the session
     user_id = user_c_id  # Ensure you have user_id set in the session
-    er=0
     img = None
     if request.method == "POST":
         try:
@@ -212,35 +211,32 @@ def calories_automated():
             print (calories)
             if calories < 0:
                 flash ("An Error Occured !")
-                er+=1
 
             else:
             # Check if calories or date_log is not provided
                 if not img:
                     flash("Missing image!", 400)
                     er+=1
+                user_details = []
+                # print (date_log)
                 try:
-                    user_details = db.execute("SELECT * FROM calorie_details WHERE id = ? AND date_log = ?", user_c_id, date_log)
+                    user_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ? AND date_log = ?", user_c_id, date_log)
                 except Exception as e:
-                    flash ("An error occurred while executing your request ! ", e)
-                    er+=1
-
-                if(user_details):
+                    return apology ("An error occurred while executing your request ! ", e)
+                # print(user_details)
+                if(len(user_details)>=1):
                     try: 
-                        db.execute("UPDATE calorie_details SET calories = ? WHERE id = ? AND date_log = ?", calories, user_c_id, date_log)
-                        return apology ("Another record for the same day was found, the number of calories has been updated!")
+                        db.execute("UPDATE calorie_details SET calories = ? WHERE user_id = ? AND date_log = ?", calories, user_c_id, date_log)
+                        flash ("Another record for the same day was found, the number of calories has been updated!")
                     except Exception as e:
-                        flash ("An error occurred while executing your request !", e)
-                        er+=1
-
+                        return apology ("An error occurred while executing your request !", e)
                 else:
                     try:
                         db.execute("INSERT INTO calorie_details (user_id, calories, date_log) VALUES (?, ?, ?)",
                                 user_id, calories, date_log)
                         flash ("Calorie details added successfully!")
                     except Exception as e:
-                        flash ("An error occurred while executing your request  ", e)
-                        er+=1
+                        return apology ("An error occurred while executing your request  ", e)
                 
                 return redirect(url_for("calories_automated"))
                 
