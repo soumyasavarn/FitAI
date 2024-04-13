@@ -9,7 +9,7 @@ CREATE TABLE user (
     height DECIMAL(12,2),
     gender VARCHAR(255),
     age INTEGER
-);
+, activity_level INTEGER);
 CREATE TABLE weight_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -17,7 +17,6 @@ CREATE TABLE weight_details (
     date_log TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
-CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE user_illness (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     illness_id INTEGER,
