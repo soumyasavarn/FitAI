@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Generate Fitness Plan
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Generate Your Fitness Plan</h1>
+    
+    <!-- Form for inputting fitness plan parameters -->
+    <div class="card">
+        <div class="card-body">
+            <form action="/generate_fitness_plan" method="post">
+                <div class="form-group">
+                    <label for="time_to_lose_weight">Time to Lose Weight (days)</label>
+                    <input type="number" class="form-control" id="time_to_lose_weight" name="time_to_lose_weight" placeholder="Enter time in days" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="daily_activity_minutes">Daily Activity (minutes)</label>
+                    <input type="number" class="form-control" id="daily_activity_minutes" name="daily_activity_minutes" placeholder="Enter daily activity time in minutes" min="1" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Generate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
