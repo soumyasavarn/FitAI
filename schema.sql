@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE user (
     id INTEGER PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
@@ -10,26 +10,15 @@ CREATE TABLE IF NOT EXISTS user (
     gender VARCHAR(255),
     age INTEGER
 );
-CREATE TABLE IF NOT EXISTS calorie_details (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    calories INTEGER,
-    date_log TEXT,
-    FOREIGN KEY (user_id) REFERENCES user(id)
-);
-CREATE TABLE IF NOT EXISTS weight_details (
+CREATE TABLE weight_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     weight DECIMAL(12,2),
     date_log TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
-CREATE TABLE IF NOT EXISTS illness_details (
-    id INTEGER PRIMARY KEY,
-    illness_name VARCHAR(255),
-    chronic BOOLEAN
-);
-CREATE TABLE IF NOT EXISTS user_illness (
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE user_illness (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     illness_id INTEGER,
     user_id INTEGER,
@@ -37,18 +26,30 @@ CREATE TABLE IF NOT EXISTS user_illness (
     FOREIGN KEY (illness_id) REFERENCES illness_details(id)
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
-CREATE TABLE IF NOT EXISTS exercise_details (
+CREATE TABLE fitness_plan_user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
-    steps INTEGER,
+    r_calories INTEGER,
+    r_mins_activity INTEGER, r_distance DECIMAL, date_log DATE, time_taken INTEGER,
+    FOREIGN KEY (user_id) REFERENCES user(id)
+);
+CREATE TABLE calorie_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    calories INTEGER,
     date_log TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
-CREATE TABLE IF NOT EXISTS fitness_plan_user (
+CREATE TABLE illness_details (
+    id INTEGER PRIMARY KEY,
+    illness_name VARCHAR(255),
+    chronic BOOLEAN
+);
+CREATE TABLE IF NOT EXISTS "exercise_details" (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
-    r_steps INTEGER,
-    r_calories INTEGER,
-    r_mins_activity INTEGER,
+    distance_covered DECIMAL,
+    time_taken DECIMAL,
+    date_log TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
