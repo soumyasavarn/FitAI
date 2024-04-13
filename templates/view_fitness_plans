@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Fitness Plans
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Your Fitness Plans</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date of Generating Plan</th>
+                <th>Distance (km)</th>
+                <th>Time (min)</th>
+                <th>Speed (km/h)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in fitness_plans %}
+            <tr>
+                <td>{{ plan.date_log }}</td>
+                <td>{{ '%.2f'|format(plan.r_distance) }}</td>
+                <td>{{ plan.r_mins_activity }}</td>
+                <td>{{ '%.2f'|format(plan.speed) }}</td>  <!-- Speed formatted to 2 decimal places -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
