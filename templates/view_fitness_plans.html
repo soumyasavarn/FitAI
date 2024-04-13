@@ -11,6 +11,7 @@ Fitness Plans
         <thead>
             <tr>
                 <th>Date of Generating Plan</th>
+                <th>Number of days of plan</th>
                 <th>Distance (km)</th>
                 <th>Time (min)</th>
                 <th>Speed (km/h)</th>
@@ -20,6 +21,7 @@ Fitness Plans
             {% for plan in fitness_plans %}
             <tr>
                 <td>{{ plan.date_log }}</td>
+                <td>{{plan. time_taken}}</td>
                 <td>{{ '%.2f'|format(plan.r_distance) }}</td>
                 <td>{{ plan.r_mins_activity }}</td>
                 <td>{{ '%.2f'|format(plan.speed) }}</td>  <!-- Speed formatted to 2 decimal places -->
