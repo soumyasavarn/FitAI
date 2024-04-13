@@ -6,9 +6,9 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from model import view_result_regression, predict
 from helpers import apology, login_required
-
+import numpy as np
 # Configure application
 app = Flask(__name__)
 
@@ -309,10 +309,76 @@ def log_weight():
             db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
                     user_id, weight, date_log)
             flash("Weight logged successfully!")
+        db.execute("UPDATE user SET curr_weight = ? WHERE id = ?", weight, user_c_id)
         return redirect(url_for("log_weight"))
     else:
         return render_template("weight.html")
 
+@app.route("/generate_fitness_plan", methods=["GET", "POST"])
+@login_required
+def generate_fitness_plan():
+    if request.method == "POST":
+        # Retrieve data from form
+        time_to_lose_weight = request.form.get("time_to_lose_weight")
+        daily_activity_minutes = request.form.get("daily_activity_minutes")
+        
+        user_details = db.execute("SELECT curr_weight, target_weight, height, gender, age FROM user WHERE id = ?", user_c_id)
+
+        c_weight = user_details[0]["curr_weight"]
+        t_weight = user_details[0]["target_weight"]
+        gender = user_details[0]["gender"]
+        age = user_details[0]["age"]
+        height = user_details[0]["height"]
+        diff = c_weight-t_weight
+        if(gender == "male"):
+            bmr = (66+13.7*c_weight+5*height-6.8*age)*1.2
+        else:
+            bmr = (655+9.6*c_weight+1.8*height-4.7*age)*1.2
+        cal = db.execute("SELECT AVG(calories) as average_daily_calories FROM calorie_details WHERE user_id = ?", user_c_id)
+        print(cal)
+        avg_cal = cal[0]["average_daily_calories"]
+        deficit = diff*7700
+        print(f"deficit: {deficit}")
+        print(f"bmr: {bmr}")
+        print(f"avg_cal: {avg_cal}")
+        exer_burn = (deficit/float(time_to_lose_weight))+avg_cal-bmr
+        print(f"exer_burn: {exer_burn}")
+        val = np.array([c_weight, exer_burn])
+        reg, scaler = view_result_regression()
+        res = predict(val, reg, scaler)
+        print(f"res: {res}")
+        d_hour = float(daily_activity_minutes)/60
+        if(res[0] < 0):
+            res[0] *= -1
+        r_speed = res[0]/d_hour
+        current_date = datetime.now().date()
+        db.execute("INSERT INTO fitness_plan_user(user_id,r_calories,r_mins_activity,r_distance, date_log) VALUES (?, ?, ?, ?, ?)", user_c_id, exer_burn, int(daily_activity_minutes), res[0], current_date)        
+
+        # Placeholder for where you would flash a success message or redirect
+        flash("Fitness plan generated successfully!")
+        return redirect(url_for('view_fitness_plans'))  # Redirect to the homepage or dashboard
+        
+    else:  # If method is GET, display the form
+        return render_template("generate_fitness_plan.html")
+@app.route("/view_fitness_plans")
+@login_required
+def view_fitness_plans():
+    user_id = session["user_id"]  # Get the user's ID from the session
+    
+    # Retrieve the fitness plans for the user from the database
+    fitness_plans_raw = db.execute("SELECT * FROM fitness_plan_user WHERE user_id = ?", user_id)
+    
+    # Calculate the speed for each fitness plan and format the data
+    fitness_plans = []
+    for plan in fitness_plans_raw:
+        if plan["r_mins_activity"]:  # Avoid division by zero
+            speed = (plan["r_distance"] / (plan["r_mins_activity"] / 60))  # Convert minutes to hours and calculate speed
+        else:
+            speed = 0
+        plan["speed"] = speed  # Add speed to the plan
+        fitness_plans.append(plan)
+    
+    return render_template("view_fitness_plans.html", fitness_plans=fitness_plans)
 @app.route("/add_illness", methods=["GET", "POST"])
 @login_required
 def add_illness():
