@@ -57,7 +57,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["password"], request.form.get("password")):
-            return apology("invalid username or password", 403)
+            return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -331,9 +331,9 @@ def generate_fitness_plan():
         height = user_details[0]["height"]
         diff = c_weight-t_weight
         if(gender == "male"):
-            bmr = (66+13.7*c_weight+5*height-6.8*age)*1.2
+            bmr = (66+13.7*c_weight+5*height-6.8*age)*1.5
         else:
-            bmr = (655+9.6*c_weight+1.8*height-4.7*age)*1.2
+            bmr = (655+9.6*c_weight+1.8*height-4.7*age)*1.4
         cal = db.execute("SELECT AVG(calories) as average_daily_calories FROM calorie_details WHERE user_id = ?", user_c_id)
         print(cal)
         avg_cal = cal[0]["average_daily_calories"]
