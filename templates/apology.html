@@ -1,0 +1,20 @@
+{% extends "layout.html" %}    
+    {% block main %}
+    <div style="max-width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div style="font-size: 24px;
+        font-weight: bold;
+        color: #dc3545;
+        margin-bottom: 20px;">Apology</div>
+        <div style="font-size: 18px;
+        color: #333;
+        margin-bottom: 20px;">
+            {{ top }} Error: {{ bottom }}
+        </div>
+    </div>
+    {% endblock %}
+
