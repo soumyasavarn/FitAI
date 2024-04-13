@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Activity Level
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Set Your Activity Level</h1>
+    <form action="/activity_level" method="post">
+        <div class="form-group">
+            <label for="activity_level">Select your activity level:</label>
+            <select class="form-control" id="activity_level" name="activity_level" required>
+                <option value="1">1 - Sedentary (little or no exercise)</option>
+                <option value="2">2 - Lightly active (light exercise/sports 1-3 days/week)</option>
+                <option value="3">3 - Moderately active (moderate exercise/sports 3-5 days/week)</option>
+                <option value="4">4 - Very active (hard exercise/sports 6-7 days a week)</option>
+                <option value="5">5 - Super active (very hard exercise & a physical job)</option>
+            </select>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Update Activity Level</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
