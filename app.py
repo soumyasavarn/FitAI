@@ -345,6 +345,7 @@ def generate_fitness_plan():
         height = user_details[0]["height"]
         diff = c_weight-t_weight
         a = db.execute("SELECT activity_level FROM user WHERE id = ?", user_c_id)
+        al = 1.3 # default
         if(gender == "male"):
             al = 0.2*(a[0]["activity_level"]+5)+0.1
             print(f"Activity Level multiplier is: {al}")
