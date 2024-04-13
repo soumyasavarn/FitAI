@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+    <form action="/changepwd" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="originalpwd" name="originalpwd" placeholder="OLD Password" type="password">
+        </div>
+        
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="newpwd" name="newpwd" placeholder="NEW password" type="password">
+        </div>
+        
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="confirmpwd" name="confirmpwd" placeholder="Confirm Password" type="password">
+        </div>
+        
+        <button class="btn btn-primary" type="submit">Change Password</button>
+    </form>
+{% endblock %}
