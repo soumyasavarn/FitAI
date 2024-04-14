@@ -5,3 +5,4 @@ requests
 cachelib
 google-generativeai
 pillow
+matplotlib

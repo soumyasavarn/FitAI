@@ -9,6 +9,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from model import view_result_regression, predict
 from helpers import apology, login_required
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg')
+import io
+import base64
 # Configure application
 app = Flask(__name__)
 
@@ -474,16 +479,64 @@ def view_illness_history():
 @login_required
 def view_calories():
     calorie_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"])
-    return render_template("view_calories.html", calorie_details=calorie_details)
+    x = list(db.execute("SELECT date_log FROM calorie_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"]))
+    y = list(db.execute("SELECT calories FROM calorie_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"]))
+    x = [date['date_log'] for date in x]
+    y = [cal['calories'] for cal in y]
+    print (x)
+    print (y)
+    # Create a Matplotlib plot
+    plt.figure()
+    plt.plot(x, y, marker='o', linestyle='-')  # 'o' marker for data points, '-' linestyle for lines
+    plt.xlabel('Time')
+    plt.ylabel('Weight')
+    plt.title('Calorie Intake vs Time')
+    
+    # Save the plot to a file locally
+    current_directory = os.getcwd()
+    plot_file_path = os.path.join(current_directory,"static",'plot_calories.png')
+    file_path = plot_file_path  # Specify the path to your file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"The file '{file_path}' has been deleted.")
+    else:
+        print(f"The file '{file_path}' does not exist.")
+
+    plt.savefig(plot_file_path)
+    
+    return render_template("view_calories.html", calorie_details=calorie_details, plot_file_path=plot_file_path)
 
 @app.route("/view_weights")
 @login_required
 def view_weights():
     # Fetch the weight details for the logged-in user, ordered by date_log ascending
     weight_details = db.execute("SELECT * FROM weight_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"])
+    x1 = list(db.execute("SELECT date_log FROM weight_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"]))
+    y1 = list(db.execute("SELECT weight FROM weight_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"]))
+    x1 = [date['date_log'] for date in x1]
+    y1 = [cal['weight'] for cal in y1]
+    print (x1)
+    print (y1)
+    # Create a Matplotlib plot
+    plt.figure()
+    plt.plot(x1, y1, marker='o', linestyle='-')  # 'o' marker for data points, '-' linestyle for lines
+    plt.xlabel('Time')
+    plt.ylabel('Weight')
+    plt.title('Weight vs Time')
     
+    # Save the plot to a file locally
+    current_directory = os.getcwd()
+    plot_file_path = os.path.join(current_directory,"static",'plot_weight.png')
+    file_path = plot_file_path  # Specify the path to your file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"The file '{file_path}' has been deleted.")
+    else:
+        print(f"The file '{file_path}' does not exist.")
+
+    plt.savefig(plot_file_path)
     # Pass the ordered weight details to the template
-    return render_template("view_weights.html", weight_details=weight_details)
+    return render_template("view_weights.html", weight_details=weight_details,plot_file_path=plot_file_path)
 
 @app.route("/view_exercises")
 @login_required
@@ -493,12 +546,20 @@ def view_exercises():
     
     # Calculate speed for each record and add it to the details
     exercise_details = []
+    x1=[] #Time
+    y1=[] #Distance
+    x2=[] #Time
+    y2=[] #Speed
     for detail in exercise_details_raw:
         speed = 0
         if detail["time_taken"]:  # To avoid division by zero
             # Convert time from minutes to hours and calculate speed
             speed = detail["distance_covered"] / (detail["time_taken"] / 60.0)
         # Append the detail with speed to the list
+        x1.append(detail["date_log"])
+        x2.append(detail["date_log"])
+        y1.append(detail["distance_covered"])
+        y2.append(speed)
         exercise_details.append({
             "date_log": detail["date_log"],
             "distance_covered": detail["distance_covered"],
@@ -506,4 +567,43 @@ def view_exercises():
             "speed": speed  # This is the speed in km/h
         })
 
-    return render_template("view_exercises.html", exercise_details=exercise_details)
+    
+    # Create a Matplotlib plot
+    plt.figure()
+    plt.plot(x1, y1, marker='o', linestyle='-')  # 'o' marker for data points, '-' linestyle for lines
+    plt.xlabel('Time')
+    plt.ylabel('Distance')
+    plt.title('Distance vs Time')
+    
+    # Save the plot to a file locally
+    current_directory = os.getcwd()
+    plot_file_path = os.path.join(current_directory,"static",'plot_distance.png')
+    file_path = plot_file_path  # Specify the path to your file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"The file '{file_path}' has been deleted.")
+    else:
+        print(f"The file '{file_path}' does not exist.")
+
+    plt.savefig(plot_file_path)
+
+    # Create a Matplotlib plot
+    plt.figure()
+    plt.plot(x2, y2, marker='o', linestyle='-')  # 'o' marker for data points, '-' linestyle for lines
+    plt.xlabel('Time')
+    plt.ylabel('Speed')
+    plt.title('Speed vs Time')
+    
+    # Save the plot to a file locally
+    current_directory = os.getcwd()
+    plot_file_path = os.path.join(current_directory,"static",'plot_speed.png')
+    file_path = plot_file_path  # Specify the path to your file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"The file '{file_path}' has been deleted.")
+    else:
+        print(f"The file '{file_path}' does not exist.")
+
+    plt.savefig(plot_file_path)
+
+    return render_template("view_exercises.html", exercise_details=exercise_details,plot_file_path=plot_file_path)
