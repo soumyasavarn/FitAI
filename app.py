@@ -285,8 +285,7 @@ def exercise():
 @app.route("/log_weight", methods=["GET", "POST"])
 @login_required
 def log_weight():
-    # The `user_id` should be retrieved from the session
-    user_id = user_c_id  # Ensure you have user_id set in the session
+    user_id = session["user_id"]  # Get the user's ID from the session
     
     if request.method == "POST":
         weight = request.form.get("weight")
@@ -296,19 +295,30 @@ def log_weight():
         if not weight or not date_log:
             return apology("Must provide weight and date", 400)
         
+        # Check for existing weight details for that date
         user_details = db.execute("SELECT * FROM weight_details WHERE user_id = ? AND date_log = ?", user_id, date_log)
-        if(user_details):
+        if user_details:
+            # Update the existing record with the new weight
             db.execute("UPDATE weight_details SET weight = ? WHERE user_id = ? AND date_log = ?", weight, user_id, date_log)
             flash("A record for that day already exists! Weight updated successfully!")
         else:
-            # Insert the form data into the weight_details table
-            db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", 
-                    user_id, weight, date_log)
+            # Insert the new weight log
+            db.execute("INSERT INTO weight_details (user_id, weight, date_log) VALUES (?, ?, ?)", user_id, weight, date_log)
             flash("Weight logged successfully!")
-        db.execute("UPDATE user SET curr_weight = ? WHERE id = ?", weight, user_c_id)
+            
+            # Get the latest weight log date
+            latest_log = db.execute("SELECT MAX(date_log) as latest_date FROM weight_details WHERE user_id = ?", user_id)
+            # Check if the new log is the latest
+            if latest_log and latest_log[0]['latest_date'] <= date_log:
+                # Update the user's current weight
+                db.execute("UPDATE user SET curr_weight = ? WHERE id = ?", weight, user_id)
+                flash("Current weight updated successfully!")
+        
         return redirect(url_for("log_weight"))
     else:
+        # Display the form to log a new weight
         return render_template("weight.html")
+
 @app.route("/activity_level", methods=["GET", "POST"])
 @login_required
 def activity_level():
@@ -341,17 +351,24 @@ def generate_fitness_plan():
         height = user_details[0]["height"]
         diff = c_weight-t_weight
         a = db.execute("SELECT activity_level FROM user WHERE id = ?", user_c_id)
+        print(a)
+        print(f"Length of a is {len(a)}")
         al = 1.3 # default
         if(gender == "male"):
-            al = 0.2*(a[0]["activity_level"]+5)+0.1
-            print(f"Activity Level multiplier is: {al}")
+            if(a[0]['activity_level']):
+                al = 0.2*(a[0]["activity_level"]+5)
+                print(f"Activity Level multiplier is: {al}")
             bmr = (66+13.7*c_weight+5*height-6.8*age)*al
         else:
-            al = 0.15*(a[0]["activity_level"]+4)+0.05
-            print(f"Activity Level multiplier is: {al}")
+            if(a[0]['activity_level']):
+                al = 0.15*(a[0]["activity_level"]+4)
+                print(f"Activity Level multiplier is: {al}")
             bmr = (655+9.6*c_weight+1.8*height-4.7*age)*al
         cal = db.execute("SELECT AVG(calories) as average_daily_calories FROM calorie_details WHERE user_id = ?", user_c_id)
         print(cal)
+        if not(cal[0]['average_daily_calories']):
+            flash("You need to enter atleast one food log to generate fitness plan!")
+            return redirect(url_for('calories'))
         avg_cal = cal[0]["average_daily_calories"]
         deficit = diff*7700
         print(f"deficit: {deficit}")
@@ -366,12 +383,33 @@ def generate_fitness_plan():
         d_hour = float(daily_activity_minutes)/60
         if(res[0] < 0):
             res[0] *= -1
+        severity = db.execute("SELECT severity FROM user_illness WHERE user_id = ?", user_c_id)
+        f = 0
+        for s in severity:
+            if(s["severity"] >= 4):
+                f = 1
+                break
         r_speed = res[0]/d_hour
+        if(f == 1):
+            if(r_speed >= 7.2):
+                r_speed = 7.2
+                d_hour = res[0]/r_speed
+                daily_activity_minutes = d_hour*60
+        g = 0
+        if(r_speed > 12):
+            r_speed = 12
+            d_hour = res[0]/r_speed
+            daily_activity_minutes = d_hour*60
+            g = 1
         current_date = datetime.now().date()
         db.execute("INSERT INTO fitness_plan_user(user_id,r_calories,r_mins_activity,r_distance, date_log, time_taken) VALUES (?, ?, ?, ?, ?, ?)", user_c_id, exer_burn, int(daily_activity_minutes), res[0], current_date, (int)(time_to_lose_weight))        
 
         # Placeholder for where you would flash a success message or redirect
         flash("Fitness plan generated successfully!")
+        if(f == 1):
+            flash("The required speed in your fitness plan is too high(as you have a severe medical condition), hence it has been lowered to near 7.2 km/h and your activity time has been adjusted accordingly!")
+        if(g == 1):
+            flash("The required speed in your fitness plan was > 12 km/h, it has been reduced to near 12 and the daily activity time has been adjusted accordingly!")
         return redirect(url_for('view_fitness_plans'))  # Redirect to the homepage or dashboard
         
     else:  # If method is GET, display the form
@@ -411,7 +449,7 @@ def add_illness():
                    selected_illness_id, user_id, illness_severity)
         
         flash("Illness added to your history.")
-        return redirect(url_for("homepage"))  # Replace some_page with your desired endpoint
+        return redirect(url_for("home"))  # Replace some_page with your desired endpoint
 
     # If GET request, fetch illnesses with their ids from the database
     illnesses = db.execute("SELECT id, illness_name FROM illness_details")
@@ -435,20 +473,23 @@ def view_illness_history():
 @app.route("/view_calories")
 @login_required
 def view_calories():
-    calorie_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ?", session["user_id"])
+    calorie_details = db.execute("SELECT * FROM calorie_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"])
     return render_template("view_calories.html", calorie_details=calorie_details)
 
 @app.route("/view_weights")
 @login_required
 def view_weights():
-    weight_details = db.execute("SELECT * FROM weight_details WHERE user_id = ?", session["user_id"])
+    # Fetch the weight details for the logged-in user, ordered by date_log ascending
+    weight_details = db.execute("SELECT * FROM weight_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"])
+    
+    # Pass the ordered weight details to the template
     return render_template("view_weights.html", weight_details=weight_details)
 
 @app.route("/view_exercises")
 @login_required
 def view_exercises():
     # Retrieve exercise details for the current user
-    exercise_details_raw = db.execute("SELECT * FROM exercise_details WHERE user_id = ?", session["user_id"])
+    exercise_details_raw = db.execute("SELECT * FROM exercise_details WHERE user_id = ? ORDER BY date_log ASC", session["user_id"])
     
     # Calculate speed for each record and add it to the details
     exercise_details = []
