@@ -210,7 +210,7 @@ def calories_automated():
             calories = get_calories(img)
             print (calories)
             if calories < 0:
-                flash ("An Error Occured !")
+                return apology ("An error occurred while executing your request ! ")
 
             else:
             # Check if calories or date_log is not provided
