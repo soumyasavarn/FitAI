@@ -238,7 +238,7 @@ def calories_automated():
                     except Exception as e:
                         return apology ("An error occurred while executing your request  ", e)
                 
-                return redirect(url_for("calories_automated"))
+                return redirect(url_for("view_calories"))
                 
         except:
             return apology("Error uploading calories!", 400)
