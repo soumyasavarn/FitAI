@@ -37,7 +37,12 @@ def after_request(response):
 @app.route("/")
 def default_page():
 
-    return render_template("layout.html")
+    return render_template("dashboard.html")
+
+@app.route("/about")
+def about():
+
+    return render_template("about.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
