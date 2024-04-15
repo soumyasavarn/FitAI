@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome to FitAI{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .hero {
+        background: url('/static/hero-bg.jpg') no-repeat center center;
+        background-size: cover;
+        height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+    .hero-text {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="hero">
+    <div class="hero-text">
+        <h1 class="display-3 fw-bold">Welcome to FitAI</h1>
+        <p class="lead">Your personal fitness companion helping you stay healthy and active.</p>
+        {% if not session["user_id"] %}
+            <a href="/register" class="btn btn-primary btn-lg">Get Started</a>
+        {% else %}
+            <a href="/homepage" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2>About FitAI</h2>
+            <p>
+                FitAI provides personalized fitness plans, tracks your progress, and adapts based on your goals. 
+                Discover how FitAI can transform your daily routine into a path to better health.
+            </p>
+            <a href="/about" class="btn btn-outline-primary">Learn More</a>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/fitness.webp" alt="About FitAI" class="img-fluid rounded">
+        </div>
+    </div>
+</div>
+{% endblock %}
