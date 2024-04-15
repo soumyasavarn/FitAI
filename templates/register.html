@@ -5,45 +5,47 @@
 {% endblock %}
 {% block head %}
 <style>
-    /* Custom styles for larger input fields */
-    .larger-input {
-        padding: 10px; /* Increase padding */
-        font-size: 1rem; /* Increase font size */
-        width: 20%; /* Set a fixed width, or use percentages */
+    .custom-input {
+        padding: .375rem .75rem; 
+        font-size: 1rem; 
     }
     
-    /* Custom styles for the larger button */
-    .larger-button {
-        padding: 10px 20px; /* Increase padding for larger button size */
-        font-size: 1rem; /* Increase font size for button text */
+    .custom-button {
+        padding: .375rem .75rem; 
+        font-size: 1rem;
+    }
+    
+    .custom-form {
+        max-width: 600px; 
+        margin: auto;
     }
 </style>
 {% endblock %}
 {% block main %}
     <form action="/register" method="post">
         <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="id" name="id" placeholder="ID number" type="number" min="1">
+            <input autocomplete="off" autofocus class="form-control mx-auto custom-input" id="id" name="id" placeholder="ID number" type="number" min="1">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text" maxlength="20">
+            <input class="form-control mx-auto custom-input" id="username" name="username" placeholder="Username" type="text" maxlength="20">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email" type="email">
+            <input class="form-control mx-auto custom-input" id="email" name="email" placeholder="Email" type="email">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto larger-input" id="curr_weight" name="curr_weight" placeholder="Current Weight (kg)" type="number" step="0.1" min="30" max="120">
+            <input class="form-control mx-auto custom-input" id="curr_weight" name="curr_weight" placeholder="Current Weight (kg)" type="number" step="0.1" min="30" max="120">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto larger-input" id="target_weight" name="target_weight" placeholder="Target Weight (kg)" type="number" step="0.1" min="30" max="120">
+            <input class="form-control mx-auto custom-input" id="target_weight" name="target_weight" placeholder="Target Weight (kg)" type="number" step="0.1" min="30" max="120">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto larger-input" id="age" name="age" placeholder="Age" type="number" min="1" max="120">
+            <input class="form-control mx-auto custom-input" id="age" name="age" placeholder="Age" type="number" min="1" max="120">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto" id="height" name="height" placeholder="Height (cm)" type="number" min="120" max="300">
+            <input class="form-control mx-auto custom-input" id="height" name="height" placeholder="Height (cm)" type="number" min="120" max="300">
         </div>
         <div class="mb-3">
-            <select class="form-control mx-auto w-auto" id="gender" name="gender">
+            <select class="form-control mx-auto custom-input" id="gender" name="gender">
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -51,10 +53,10 @@
             </select>
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password" minlength="8">
+            <input class="form-control mx-auto custom-input" id="password" name="password" placeholder="Password" type="password" minlength="8">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="repassword" name="confirmation" placeholder="Confirm Password" type="password" minlength="8">
+            <input class="form-control mx-auto custom-input" id="repassword" name="confirmation" placeholder="Confirm Password" type="password" minlength="8">
         </div>
         <!-- Add btn-lg class to make the button larger -->
         <button class="btn btn-primary btn-lg" type="submit">Register</button>
