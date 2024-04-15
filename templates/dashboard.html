@@ -6,7 +6,6 @@
 {{ super() }}
 <style>
     .hero {
-        background: url('/static/hero-bg.jpg') no-repeat center center;
         background-size: cover;
         height: 75vh;
         display: flex;
@@ -20,6 +19,11 @@
         padding: 2rem;
         border-radius: 10px;
     }
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;  /* Spacing between buttons */
+    }
 </style>
 {% endblock %}
 
@@ -29,9 +33,12 @@
         <h1 class="display-3 fw-bold">Welcome to FitAI</h1>
         <p class="lead">Your personal fitness companion helping you stay healthy and active.</p>
         {% if not session["user_id"] %}
+        <div class="hero-buttons">
             <a href="/register" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="/login" class="btn btn-secondary btn-lg">Have an account? Login</a>
+        </div>
         {% else %}
-            <a href="/homepage" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <a href="/homepage" class="btn btn-primary btn-lg">Go to Dashboard</a>
         {% endif %}
     </div>
 </div>
