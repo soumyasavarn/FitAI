@@ -385,6 +385,13 @@ def generate_fitness_plan():
         reg, scaler = view_result_regression()
         res = predict(val, reg, scaler)
         print(f"res: {res}")
+        h = 0
+        while(res[0] > 12):
+            exer_burn = exer_burn-100
+            val = np.array([c_weight, exer_burn]) 
+            time_to_lose_weight = deficit/(exer_burn+bmr-avg_cal)
+            res = predict(val, reg, scaler)
+            h = 1
         d_hour = float(daily_activity_minutes)/60
         if(res[0] < 0):
             res[0] *= -1
@@ -415,6 +422,8 @@ def generate_fitness_plan():
             flash("The required speed in your fitness plan is too high(as you have a severe medical condition), hence it has been lowered to near 7.2 km/h and your activity time has been adjusted accordingly!")
         if(g == 1):
             flash("The required speed in your fitness plan was > 12 km/h, it has been reduced to near 12 and the daily activity time has been adjusted accordingly!")
+        if(h == 1):
+            flash("For the number of days of the plan you wanted, daily distance requirements were too high, hence the number of days have been adjusted to lower the distance requirements to a maximum of 12 km!")
         return redirect(url_for('view_fitness_plans'))  # Redirect to the homepage or dashboard
         
     else:  # If method is GET, display the form
