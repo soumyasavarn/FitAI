@@ -1,8 +1,6 @@
 # FitAI
 Python lab project involving GenAI as well as classical ML algorithms for fitness related predictions.
 
-![Fitness Tracker](https://yourwebsite.com/fitness_tracker_logo.png)
-
 Welcome to our Fitness Tracker and Predictor project! This project aims to help you track your fitness activities and predict future goals with ease. Whether you're a fitness enthusiast or just starting your journey towards a healthier lifestyle, our app has got you covered.
 
 Features
@@ -18,6 +16,7 @@ Features
 - **Cachelib**: Implement caching mechanisms to optimize performance and reduce latency.
 - **Google Generative AI**: Leverage cutting-edge AI technology for generating personalized fitness recommendations.
 - **Pillow**: Perform image processing tasks such as resizing and cropping for enhanced visual appeal.
+- **Matplotlib**: Generates visually appealing plots for smooth data visualisation.
 
 Installation
 ------------
