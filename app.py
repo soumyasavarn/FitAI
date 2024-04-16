@@ -407,6 +407,7 @@ def generate_fitness_plan():
                 f = 1
                 break
         r_speed = res[0]/d_hour
+        r_orig_speed = res[0]/d_hour     
         if(f == 1):
             if(r_speed >= 7.2):
                 r_speed = 7.2
