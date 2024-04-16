@@ -60,63 +60,70 @@ def scale(df):
     scaler.fit(df)
     df_scaled = scaler.transform(df)
     return df_scaled, scaler
-def test_train_split(df, num, df_pred):
+"""def test_train_split(df, num, df_pred):
     x_train = df[0:num, :]
     x_test = df[num::, :]
     y_train = df_pred[0:num]
     y_test = df_pred[num::]
-    return (x_train, x_test, y_train, y_test)
-def cv_test_train_split(df, num, df_pred, num1):
-    x_train = df[0:num, :]
-    x_cv = df[num:num+num1, :]
-    x_test = df[num+num1::, :]
-    y_train = df_pred[0:num]
-    y_cv = df_pred[num:num+num1]
-    y_test = df_pred[num+num1::]
-    return (x_train, x_cv, x_test, y_train, y_cv, y_test)
+    return (x_train, x_test, y_train, y_test)"""
+def test_train_split(df, num, df_pred):
+    start_index = (len(df) - num) // 2
+    
+    if start_index < 0:
+        start_index = 0
+        num = len(df) 
+    
+    x_test = df[start_index:start_index + num, :]
+    y_test = df_pred[start_index:start_index + num]
+    test_indices = np.concatenate((np.arange(start_index), np.arange(start_index + num, len(df))))
+    x_train = df[test_indices, :]
+    y_train = df_pred[test_indices]
+    
+    return x_train, x_test, y_train, y_test
 from sklearn.linear_model import LinearRegression
-def linear_model(x_train, y_train, x_test, y_test):
-    reg = LinearRegression().fit(x_train, y_train)
-    reg_train = reg.score(x_train, y_train)
-    reg_test = reg.score(x_test, y_test)
-    model_coef = reg.coef_
-    model_intercept = reg.intercept_
-    return (reg_train, reg_test, model_coef, model_intercept, reg)
 from sklearn.preprocessing import PolynomialFeatures
-def poly_model(x_train, y_train, x_test, y_test, degree=2):
+def poly_model1(X_train, y_train, degree=2):
     poly = PolynomialFeatures(degree)
-    x_poly_train = poly.fit_transform(x_train)
-    x_poly_test = poly.fit_transform(x_test)
-    reg = LinearRegression().fit(x_poly_train, y_train)
-    model_coef = reg.coef_
-    model_intercept = reg.intercept_
-    reg_train = reg.score(x_poly_train, y_train)
-    reg_test = reg.score(x_poly_test, y_test)
-    return (reg_train, reg_test, model_coef, model_intercept, reg)
+    X_poly_train = poly.fit_transform(X_train)
+    reg = LinearRegression().fit(X_poly_train, y_train)
+    reg_train = reg.score(X_poly_train, y_train)
+    return (reg_train, reg, poly)
 from sklearn.linear_model import LinearRegression
 def linear_model1(X_train, y_train):
     reg = LinearRegression().fit(X_train, y_train)
     reg_train = reg.score(X_train, y_train)
-    model_coef = reg.coef_
-    model_intercept = reg.intercept_
-    return (reg_train, model_coef, model_intercept, reg)
+
+    return (reg_train, reg)
 def view_result_regression():
     cols = ['Weight', 'Calories']
     df_melted = data_processing()
     df_t = df_melted[cols]
     df_p = df_melted['Activity']
     df_s, scaler = scale(df_t)
-    X_train = df_s
-    y_train = df_p
-    reg_train, model_coef, model_intercept, reg = linear_model1(X_train, y_train)
-    print(f"Regression score is {reg_train}")
-    print(f"Model Coefficients are {reg.coef_}")
-    print(f"Model intercept is {reg.intercept_}")
-    return reg, scaler
-def predict(val, reg, scaler):
-    val = np.reshape(val, (1, 2))
-    val = scaler.transform(val)
-    return reg.predict(val)
+    X_train, X_test, y_train, y_test = test_train_split(df_s, 15, df_p)
+    reg_train, reg = linear_model1(X_train, y_train)
+    reg2_train, reg2, poly2 = poly_model1(X_train, y_train, 2)
+    reg3_train, reg3, poly3 = poly_model1(X_train, y_train, 3)
+    X_poly_test2 = poly2.fit_transform(X_test)
+    X_poly_test3 = poly3.fit_transform(X_test)
+    print(f"Training set linear regression score (for degree 1)is {reg_train}")
+    print(f"Test set linear regression score (for degree 1)is {reg.score(X_test, y_test)}")
+    print(f"Model Coefficients for degree 1 are {reg.coef_}")
+    print(f"Model intercept for degree 1 is {reg.intercept_}")
+    print(f"Training set polynomial regression score (for degree 2)is {reg2_train}")
+    print(f"Test set polynomial regression score (for degree 2)is {reg2.score(X_poly_test2, y_test)}")
+    print(f"Model Coefficients for degree 2 are {reg2.coef_}")
+    print(f"Model intercept for degree 2 is {reg2.intercept_}")
+    print(f"Training set polynomial regression score (for degree 3)is {reg3_train}")
+    print(f"Test set polynomial regression score (for degree 3)is {reg3.score(X_poly_test3, y_test)}")
+    print(f"Model Coefficients for degree 3 are {reg3.coef_}")
+    print(f"Model intercept for degree 3 is {reg3.intercept_}")
+    return reg2, scaler, poly2
+def predict(val1, reg, scaler, poly):
+    val1 = np.reshape(val1, (1, 2))
+    val1 = scaler.transform(val1)
+    val1 = poly.fit_transform(val1)
+    return reg.predict(val1)
 
 if __name__ == "__main__":
     view_result_regression()
