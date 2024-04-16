@@ -15,25 +15,37 @@ def data_processing():
     rr_f = rr.rename(columns = {'Activity, Exercise or Sport (1 hour)' : 'Activity'})
     co = ['Activity', '130 lb', '155 lb', '180 lb', '205 lb']
     rr = rr_f[co]
-    rr['Activity'].replace('Running, 5 mph (12 minute mile)', '8.0', inplace=True)
-    rr['Activity'].replace('Running, 5.2 mph (11.5 minute mile)', '8.32', inplace=True)
-    rr['Activity'].replace('Running, 6 mph (10 min mile)', '9.6', inplace=True)
-    rr['Activity'].replace('Running, 6.7 mph (9 min mile)', '10.72', inplace=True)
-    rr['Activity'].replace('Running, 7 mph (8.5 min mile)', '11.2', inplace=True)
-    rr['Activity'].replace('Running, 7.5mph (8 min mile)', '12.0', inplace=True)
-    rr['Activity'].replace('Running, 8 mph (7.5 min mile)', '12.8', inplace=True)
-    rr['Activity'].replace('Running, 8.6 mph (7 min mile)', '13.88', inplace=True)
-    rr['Activity'].replace('Running, 9 mph (6.5 min mile)', '14.4', inplace=True)
-    rr['Activity'].replace('Running, 10 mph (6 min mile)', '16.0', inplace=True)
-    rr['Activity'].replace('Running, 10.9 mph (5.5 min mile)', '17.44', inplace=True)
+    activity_map = {
+    'Running, 5 mph (12 minute mile)': '8.0',
+    'Running, 5.2 mph (11.5 minute mile)': '8.32',
+    'Running, 6 mph (10 min mile)': '9.6',
+    'Running, 6.7 mph (9 min mile)': '10.72',
+    'Running, 7 mph (8.5 min mile)': '11.2',
+    'Running, 7.5mph (8 min mile)': '12.0',
+    'Running, 8 mph (7.5 min mile)': '12.8',
+    'Running, 8.6 mph (7 min mile)': '13.88',
+    'Running, 9 mph (6.5 min mile)': '14.4',
+    'Running, 10 mph (6 min mile)': '16.0',
+    'Running, 10.9 mph (5.5 min mile)': '17.44'
+    }
+
+    for original_activity, new_value in activity_map.items():
+        rr.loc[rr['Activity'] == original_activity, 'Activity'] = new_value
+
     cols = ['Activity', '130 lb', '155 lb', '180 lb', '205 lb']
     wr = wr_f[cols]
-    wr['Activity'].replace('Walking 2.0 mph, slow', '3.2', inplace=True)
-    wr['Activity'].replace('Walking 2.5 mph', '4.0', inplace=True)
-    wr['Activity'].replace('Walking 3.0 mph, moderate', '4.8', inplace=True)
-    wr['Activity'].replace('Walking 3.5 mph, brisk pace', '5.6', inplace=True)
-    wr['Activity'].replace('Walking 4.0 mph, very brisk', '6.4', inplace=True)
-    wr['Activity'].replace('Walking 4.5 mph', '7.2', inplace=True)
+    activity_map = {
+    'Walking 2.0 mph, slow': '3.2',
+    'Walking 2.5 mph': '4.0',
+    'Walking 3.0 mph, moderate': '4.8',
+    'Walking 3.5 mph, brisk pace': '5.6',
+    'Walking 4.0 mph, very brisk': '6.4',
+    'Walking 4.5 mph': '7.2'
+    }
+
+    for original_activity, new_value in activity_map.items():
+        wr.loc[wr['Activity'] == original_activity, 'Activity'] = new_value
+
     wr = wr.rename(columns={"130 lb": 59, "155 lb": 70, "180 lb": 82, "205 lb" : 93})
     rr = rr.rename(columns={"130 lb": 59, "155 lb": 70, "180 lb": 82, "205 lb" : 93})
     wr = wr.iloc[1::, :]
