@@ -387,8 +387,8 @@ def generate_fitness_plan():
         exer_burn = (deficit/float(time_to_lose_weight))+avg_cal-bmr
         print(f"exer_burn: {exer_burn}")
         val = np.array([c_weight, exer_burn])
-        reg, scaler = view_result_regression()
-        res = predict(val, reg, scaler)
+        reg, scaler, poly = view_result_regression()
+        res = predict(val, reg, scaler, poly)
         print(f"res: {res}")
         h = 0
         while(res[0] > 12):
@@ -412,6 +412,11 @@ def generate_fitness_plan():
                 r_speed = 7.2
                 d_hour = res[0]/r_speed
                 daily_activity_minutes = d_hour*60
+        if(f == 0 and r_speed >= 10):
+            r_orig_speed = r_speed
+            r_speed = 10
+            d_hour = res[0]/r_speed
+            daily_activity_minutes = d_hour*60
         g = 0
         if(r_speed > 12):
             r_speed = 12
@@ -425,6 +430,8 @@ def generate_fitness_plan():
         flash("Fitness plan generated successfully!")
         if(f == 1):
             flash("The required speed in your fitness plan is too high(as you have a severe medical condition), hence it has been lowered to near 7.2 km/h and your activity time has been adjusted accordingly!")
+        if(f == 0 and r_orig_speed > 10):
+            flash("The required speed in your fitness plan is too high(> 10 km/h), hence it has been lowered to near 10 km/h and your activity time has been adjusted accordingly!")
         if(g == 1):
             flash("The required speed in your fitness plan was > 12 km/h, it has been reduced to near 12 and the daily activity time has been adjusted accordingly!")
         if(h == 1):
