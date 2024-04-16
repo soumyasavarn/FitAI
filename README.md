@@ -22,7 +22,7 @@ Installation
 ------------
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/fitness-tracker.git
+   git clone https://github.com/soumyasavarn/fitness-tracker.git
 
 2. Install the dependencies
     ```bash
@@ -32,7 +32,7 @@ Installation
     ```bash
     flask run
 
-Getting Started:
+Getting Started
 ----------------
 1. Register or login to your account.
 2. Start tracking your activities by entering relevant data.
@@ -43,5 +43,7 @@ Getting Started:
 Contributors:
 -------------
 Saptarshi Mukherjee
+
 Ishan Chandra Gupta
+
 Soumya Savarn
