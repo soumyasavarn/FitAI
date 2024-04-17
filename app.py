@@ -14,6 +14,11 @@ import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 import io
 import base64
+import warnings
+from sklearn.exceptions import DataConversionWarning
+
+warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+
 # Configure application
 app = Flask(__name__)
 
@@ -393,7 +398,10 @@ def generate_fitness_plan():
         h = 0
         while(res[0] > 12):
             exer_burn = exer_burn-100
-            val = np.array([c_weight, exer_burn]) 
+            val = np.array([c_weight, exer_burn])
+            if(exer_burn+bmr-avg_cal < 0):
+                flash('Too ambitious, please try again!')
+                return render_template("generate_fitness_plan.html")
             time_to_lose_weight = deficit/(exer_burn+bmr-avg_cal)
             res = predict(val, reg, scaler, poly)
             h = 1
@@ -407,7 +415,7 @@ def generate_fitness_plan():
                 f = 1
                 break
         r_speed = res[0]/d_hour
-        r_orig_speed = res[0]/d_hour     
+        r_orig_speed = r_speed
         if(f == 1):
             if(r_speed >= 7.2):
                 r_speed = 7.2
