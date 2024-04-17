@@ -44,6 +44,10 @@ def default_page():
 
     return render_template("dashboard.html")
 
+@app.route("/events")
+def events():
+    return render_template("events.html")
+
 @app.route("/about")
 def about():
 
