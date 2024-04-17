@@ -390,6 +390,9 @@ def generate_fitness_plan():
         print(f"bmr: {bmr}")
         print(f"avg_cal: {avg_cal}")
         exer_burn = (deficit/float(time_to_lose_weight))+avg_cal-bmr
+        if(avg_cal-bmr > 800):
+            flash("Your daily calorie intake is too high, you need to reduce that first!")
+            return redirect("\calories")
         print(f"exer_burn: {exer_burn}")
         val = np.array([c_weight, exer_burn])
         reg, scaler, poly = view_result_regression()
