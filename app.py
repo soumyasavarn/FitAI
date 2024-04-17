@@ -395,7 +395,7 @@ def generate_fitness_plan():
             exer_burn = exer_burn-100
             val = np.array([c_weight, exer_burn]) 
             time_to_lose_weight = deficit/(exer_burn+bmr-avg_cal)
-            res = predict(val, reg, scaler)
+            res = predict(val, reg, scaler, poly)
             h = 1
         d_hour = float(daily_activity_minutes)/60
         if(res[0] < 0):
