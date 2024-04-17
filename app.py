@@ -399,11 +399,20 @@ def generate_fitness_plan():
         while(res[0] > 12):
             exer_burn = exer_burn-100
             val = np.array([c_weight, exer_burn])
-            if(exer_burn+bmr-avg_cal < 0):
+            """if(exer_burn+bmr-avg_cal < 0):
                 flash('Too ambitious, please try again!')
-                return render_template("generate_fitness_plan.html")
+                return render_template("generate_fitness_plan.html")"""
             time_to_lose_weight = deficit/(exer_burn+bmr-avg_cal)
+            if(time_to_lose_weight < 0):
+                exer_burn = exer_burn+100
+                time_to_lose_weight = deficit/(exer_burn+bmr-avg_cal)
+                val = np.array([c_weight, exer_burn])
+                res = predict(val, reg, scaler, poly)
+                break
             res = predict(val, reg, scaler, poly)
+            print(f"Distance at the moment is {res[0]}")
+            print(f"Time at the moment is {time_to_lose_weight}")
+            print(f"Extra cal to burn: {exer_burn}")
             h = 1
         d_hour = float(daily_activity_minutes)/60
         if(res[0] < 0):
