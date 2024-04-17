@@ -1,5 +1,8 @@
 import numpy as np 
 import pandas as pd
+import warnings
+from sklearn.exceptions import DataConversionWarning
+
 
 def data_processing():
     df = pd.read_csv('data/exercise.csv')
@@ -107,6 +110,7 @@ def linear_model1(X_train, y_train):
 
     return (reg_train, reg)
 def view_result_regression():
+    warnings.filterwarnings(action='ignore', category=DataConversionWarning)
     cols = ['Weight', 'Calories']
     df_melted = data_processing()
     df_t = df_melted[cols]
@@ -132,6 +136,7 @@ def view_result_regression():
     print(f"Model intercept for degree 3 is {reg3.intercept_}")
     return reg2, scaler, poly2
 def predict(val1, reg, scaler, poly):
+    warnings.filterwarnings(action='ignore', category=DataConversionWarning)
     val1 = np.reshape(val1, (1, 2))
     val1 = scaler.transform(val1)
     val1 = poly.fit_transform(val1)
