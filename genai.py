@@ -1,6 +1,7 @@
 import google.generativeai as genai
+import os
 
-GOOGLE_API_KEY = "YOUR GOOGLE API"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API")
 #source(for getting API): https://ai.google.dev/?utm_source=google&utm_medium=cpc&utm_campaign=brand_core_brand&gad_source=1
 
 def get_calories(img):
