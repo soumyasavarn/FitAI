@@ -1,3 +1,5 @@
+# Deployed on: https://compulsory-gussie-fit-ai-1df0789c.koyeb.app/ (as of Feb 2025)
+
 # FitAI
 Python lab project involving GenAI as well as classical ML algorithms for fitness related predictions.
 
